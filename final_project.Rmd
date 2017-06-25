@@ -1,0 +1,265 @@
+---
+title: "Final_Project"
+author: "³\¯§Þ±"
+date: "2017¦~6¤ë25¤é"
+output: html_document
+---
+
+#¾ú¦~¦U°|¥æ´«¥Í¤H¼ÆÅÜ¤Æ 
+
+±q¹Ï¤¤¥i¥Hµo²{¡A¥HºÞ²z¾Ç°|ªº¥æ´«¤H¼Æ¦¨ªø³Ì§Ö¡A¦b2015¦~¥æ´«¥Í¤H¼Æ¤w°ª¹F350¤H¡A¥eÁ`ÃBªº¥|¤À¤§¤@¡F¨ä¦¸«h¬°¤å¾Ç°|¤ÎªÀ·|¬ì¾Ç°|¡A¬ù¬°230¤H¥ª¥k¡A¥H¤W¤T­Ó¾Ç°|´NÅn¬A¤FÁ`ÃBªº¤»¦¨¥H¤W¡F¨ä¥L¾Ç°|¦hºû«ù¦b20¦Ü60¤H¥ª¥k¡C
+
+
+```{r, include=FALSE}
+library(ggplot2)
+library(plotly)
+require(stats)
+library("RColorBrewer")
+```
+
+```{r exchange students, echo=FALSE, warning=FALSE}
+setwd("C:/Users/asus/Dropbox/R Language Thursday/HW04")
+rawdata <- read.csv("exchange_students.csv",header = TRUE,encoding = "UTF-8", sep=",")
+
+
+yearLength <- length(rawdata$year)
+firstyear <- rawdata$year[1]
+lastyear <- rawdata$year[yearLength]
+n <- lastyear - firstyear +1
+alltype <- colnames(rawdata)
+
+CollegeId <- c(3:13)
+newTable <- data.frame()
+for (i in 2:n)
+{
+  year <- as.matrix(rep(rawdata$year[i],length(rawdata[i,CollegeId])))
+  people = as.matrix(as.numeric(rawdata[i,CollegeId]))
+  type = as.matrix(as.character(alltype[CollegeId]))
+  temp = cbind(year, type, people)
+  newTable = rbind(newTable, temp)
+}
+
+names(newTable) = c('year', 'College', 'people')
+newTable = newTable[with(newTable, order(College)),]
+rownames(newTable) <- 1:nrow(newTable)
+
+p <- plot_ly(data = newTable[,1:3], x = ~year, 
+             y = ~people, color = ~College, main="¾ú¦~¦U°|¥æ´«¥Í¤H¼ÆÅÜ¤Æ•¸") %>%
+  add_lines( yaxis = list(range = c(0,10)))
+p
+```
+
+
+```{r, include=FALSE}
+library("dplyr")
+library("plotly")
+library("RColorBrewer")
+```
+
+##¾ú¦~¦U°|¦X¬ù¼Æ¶qÅÜ¤Æ
+¦X¬ù¼Æ«üªº¬O¦X¬ù¤¤¬ù©wªº¥æ´«¾Ç¥Í¼Æ¥Ø¡C¤j³¡¤À¾Ç°|³£±q2013¦~¶}©l¦X¬ù¼Æ¨³³t¼W¥[¡A¤×¨ä¬OªÀ¬ì°|¡Bªk«ß¾Ç°|¤ÎºÞ²z¾Ç°|¼W¥[¼Æ¶q³Ì¦h¡A»P¥æ´«¾Ç¥Í¼Æ¥ØÅÜ¤ÆªºÁÍ¶Õ¤j­P¬Ûªñ
+
+```{r contract ,echo= F}
+raw_data<- read.csv("C:/Users/asus/Desktop/contract.csv", sep= ",", encoding = "UTF-8",header= TRUE)
+
+year<- raw_data$year
+college<- colnames(raw_data)[-1]
+
+typeId = c(2:12)
+newTable = data.frame()
+n<- nrow(raw_data)
+
+for (nid in c(1:n)){
+  year = as.matrix(rep(raw_data$year[nid], length(raw_data[nid,typeId])))
+  num = as.matrix(as.numeric(raw_data[nid,typeId]))
+  type = as.matrix(college)
+  temp = cbind(year, num, type)
+  newTable = rbind(newTable, temp)
+}
+names(newTable) = c('year', 'contract_num', 'college')
+newTable = newTable[with(newTable, order(college)),]
+#newTable<- newTable[0:198, ]
+rownames(newTable) <- 1:nrow(newTable)
+
+colourCount = length(unique(mtcars$hp))
+getPalette = colorRampPalette(brewer.pal(9, "Set1"))
+newTable<- newTable[-(199:216),]
+
+p <- plot_ly(data = newTable, x = ~year, 
+             y = ~contract_num, color = ~college, colors= getPalette(colourCount)) %>%
+  add_lines( yaxis = list(range = c(0,50)))
+p
+```
+
+
+##¾ú¦~¦U°|­^»y±Â½Ò¼Æ¶q¶qÅÜ¤Æ
+
+°£¤F¤å¾Ç°|¥H¥~¨C­Ó¾Ç°|ªº­^»y½Òµ{¼Æ¶q³£¦³ÀHµÛ®É¶¡¼W¥[ªºÁÍ¶Õ¡C¤å¾Ç°|¦]¬°¥D­n­^»y±Â½Òªº¹ï¶H¬O¥»¦aªº¾Ç¥Í¡A¥i¯à»P¥æ´«¾Ç¥Í¸ûµL¬ÛÃö¡C
+
+```{r eng_class, echo= F}
+raw_data<- read.csv("C:/Users/asus/Desktop/eng_class.csv", sep= ",", header= TRUE)
+
+lastsemId = length(raw_data$semester)
+firstsem = raw_data$semester[1]
+lastsem = raw_data$semester[lastsemId]
+n = 18
+allType = names(raw_data)
+rownames(raw_data) <- 1:nrow(raw_data)
+
+# NerTbale is as follows:
+# year, people, type
+# 1950, 100, prof.
+# ...
+# 2010, 50, lecture
+typeId = c(2:13)
+newTable = data.frame()
+for( nid in c(1:n) )
+{
+  semester = as.matrix(rep(raw_data$semester[nid], length(raw_data[nid,typeId])))
+  class_num = as.matrix(as.numeric(raw_data[nid,typeId]))
+  type = as.matrix(as.character(allType[typeId]))
+  temp = cbind(semester, class_num, type)
+  newTable = rbind(newTable, temp)
+}
+names(newTable) = c('semester', 'class_num', 'pos')
+newTable = newTable[with(newTable, order(pos)),]
+#newTable<- newTable[0:198, ]
+rownames(newTable) <- 1:nrow(newTable)
+
+colourCount = length(unique(mtcars$hp))
+getPalette = colorRampPalette(brewer.pal(9, "Set1"))
+newTable<- newTable[-(199:216),]
+
+p <- plot_ly(data = newTable, x = ~semester, 
+             y = ~class_num, color = ~pos, colors= getPalette(colourCount)) %>%
+  add_lines( yaxis = list(range = c(0,10)))
+p
+```
+
+
+#«Ø¥ß2007¦Ü2013¦~¦U¾Ç°|ªº¥æ´«¥Í¤H¼Æ¡B¦X¬ù¼Æ¶q¤Î­^»y±Â½Ò¼Æ¶qªºdata frame
+```{r, include=FALSE}
+setwd("C:/Users/asus/Dropbox/R Language Thursday/HW04")
+english_course <- read.csv("english_course.csv", sep=",", header=TRUE)
+number_of_exchange_students <- read.csv("exchange_students.csv", sep=",", header=TRUE)
+contract <- read.csv("contract.csv", sep=",", header=TRUE)
+
+
+
+#«Ø¥ßdata frame
+n <- ncol(english_course)
+Newtable <- data.frame()
+
+for (i in 3:n){
+  table <- as.matrix(english_course[1:7,i])
+  table2 <- as.matrix(number_of_exchange_students[15:21,i])
+  table3 <- as.matrix(contract[28:34,i])
+  temp <- cbind(table, table2,table3)
+  Newtable <- rbind(temp,Newtable)
+}
+
+data <- data.frame(rep(colnames(english_course)[3:13],each=7),Newtable)
+colnames(data) <- c("department","English_courses", "Exchange_students","Contracts")
+```
+
+
+#¥æ´«¥Í¤H¼Æ¤Î­^»y±Â½Ò¼Æ¶q¥[Á`
+```{r exchange students & English courses,  echo=FALSE}
+ggplot(data=data, aes(y=Exchange_students, x=department))+ geom_bar(stat="identity") +coord_flip() + labs(x="Deparment", y=" Total Exchange Students")
+ggplot(data=data, aes(y=data[,2], x=department))+ geom_bar(stat="identity") +coord_flip() + labs(x="Deparment", y=" Total English Courses")
+```
+
+
+±q¦U°|¥æ´«¥Í¤H¼Æ¤Î­^»y±Â½Ò¼Æ¶q¨Ó¬Ý¡A¨Ì·Ó¦U¦~¥­§¡¡A¥i¥Hµo²{¦b¦U­Ó¾Ç°|¤U¡A¥­§¡¤@¦ì¥æ´«¥Í¥i¥H¹ïÀ³¨ì1ªù½Ò¡A¦ý¥Í¬ì°|«o¥i¥H¹ïÀ³±Nªñ10ªù½Òµ{¡A­Õ­Y¥H¤@ªù½Ò¥i¥H¦¬30¬°¾Ç¥Í¨Ó¬Ý¡A¨ä¹ê¥x¤jªº­^»y±Â½Ò¼Æ¶qÀ³¸Ó¤´ºâ¬O¨¬°÷ªº¡A¾ãÅé¦U­Ó¾Ç°|ªº¥æ´«¥i¥H¿ï¾Üªº½Òµ{ºØÃþ³£¦³¶W¹L10ªù½Òµ{¡A¦]¦¹À³¸ÓµL¥æ´«¥Í¨Ó¥x¤j¥æ´«¡A«oµo¥Í­^»y±Â½Ò¼Æ¶q¤Ó¤Öªº°ÝÃD¡C
+
+```{r English courses per students, echo=TRUE}
+#¾ú¦~¥­§¡¥æ´«¥Í¤H¼Æ¤Î­^»y±Â½Ò¼Æ¶q
+mean1 <- tapply(data[,2], data[,1],mean)
+mean2 <- tapply(data[,3], data[,1],mean)
+
+#¥­§¡¤@¦ì¥æ´«¥Í¥i¥H¿ï¾Üªº­^»y½Òµ{¼Æ¶q
+mean1/mean2
+```
+
+#±À´ú¥æ´«¥Í¿ï¾Ü¨Ó¥x­ì¦]¡G
+- ¦]¬°¾Ç®Õ´£¨Ñ­^»y±Â½Ò¡A©Ò¥H»y¨¥»ÙÃªªºªùÂe¨Ã¤£°ª¡A¬G¿ï¾Ü¨Ó¥xÆW¥æ´«
+- ¦]®Õ¤è¦X¬ù°ÝÃD¡AÂù¤èÃ±¬ù¨Ã°tµ¹©T©w¦WÃB¡A¦]¦¹¦A²{¦³¾÷·|¤U¿ï¾Ü¨Ó¥x¥æ´«
+- ¦]¥xÆW¬F¸gÃ­©w¡A¨Ã¤£±`µo¥Í®£©Æ§ðÀ»©Î¬Fªv°Ê¶Ã¡A¿ï¾Ü¨Ó¥xÆW¤]¸û¦w¥þ
+- ¦]¤¤°ê¸gÀÙ§Ö³tµo®i¡A¨Ï±o¶V¨Ó¶V¦h¤H§Æ±æ¾Ç²ß¤¤¤å¡A¦]¦¹¿ï¾Ü¥xÆW¨Ó¾Ç²ß¤¤¤å
+- ¦]¥xÆW¸gÀÙµo®i¨}¦n¡A¥æ³q«K§Q¥B¥Í¬¡¾÷¯à¨}¦n¡A¨Ó¥xÆW¨Ã¤£·|¹J¨ì¥Í¬¡¤£«Kªº°ÝÃD
+- ¨ü¨ì¨Ó¥xÆ[¥ú¤H¼Æº¥¼W¡A¥´¶}¥xÆW¦b°ê¥~ªºª¾¦W«×¡A¥~°ê¾Ç¥Í¦]¦Ó·Q¨Ó¥xÆW¥æ´«¶¶«K°ÑÆ[
+
+
+#¥ýÆ[¹î³o´X¶µÅÜ¼Æ¤§¶¡ªº¬ÛÃö©Ê¡A¥i¥Hµo²{´X¶µ­«ÂI¡G
+- ¥~°êÆ[¥ú¤H¼Æ»P¥æ´«¥Í¤H¼Æ½T¹ê¦³©úÅã¥¿¬ÛÃö
+- ¦Ó©M¬ù§ô¶q¤Î­^»y±Â½Ò¼Æ¶q¤]©M¥æ´«¥Í¤H¼Æ§e©úÅã¥¿¬ÛÃö
+- µo²{¥xÆW¸gÀÙµo®i»P¨ä¥LÅÜ¼ÆÃö«Y¨Ã¤£¤j¡A¶È»P¤¤°ê¸gÀÙª¬ªp¤Î¬F¸gÃ­©w«×§e²{¥¿¬ÛÃö
+- ¤¤°ê¸gÀÙ¦¨ªø¤Ï­Ë»PÆ[¥ú¤H¼Æ¡B¥æ´«¥Í¼Æµ¥¦¨­t¬ÛÃö
+- ¬F¸gÃ­©w«×«h»P¨ä¥LÅÜ¼Æ§¡µLÅãµÛÃö«Y
+
+```{r reasons, echo=TRUE}
+setwd("C:/Users/asus/Dropbox/R Language Thursday/FINAL")
+library(ellipse)
+
+#data clearing
+rawdata <- read.csv("rawdata.csv", sep=",", header=TRUE)
+rawdata2 <- rawdata[,2:8]
+rownames(rawdata2) <- rawdata[,1]
+
+rawdata2[,1] <- as.numeric(as.character(rawdata[,2]))
+rawdata2[,2] <- as.numeric(rawdata[,3])
+rawdata2[,3] <- as.numeric(rawdata[,4])
+rawdata2[,4] <- as.numeric(rawdata[,5])
+rawdata2[,5] <- as.numeric(rawdata[,6])
+rawdata2[,6] <- as.numeric(rawdata[,7])
+rawdata2[,7] <- as.numeric(rawdata[,8])
+# summary 
+data2 <- rawdata2[28:34,1:7]
+corr <- cor(data2)
+plotcorr(corr, col=rep(c("lightblue", "lightgreen", "lightyellow")))
+summary(data2)
+```
+
+
+#±µµÛ´N¨Ì·Ó¤W­z6­ÓÅÜ¼Æ¥h°µ¦^ÂkÀË©w¡A¨Ã¥Îpartial F test§R¥h¤£­«­nªºÅÜ¼Æ¥i¥Hµo²{¡A¼vÅT³Ì¤jªºÅÜ¼Æ¬°¦ó¬ù¼Æ¶q¤Î­^»y±Â½Ò¼Æ¶q¡C
+
+¥i¥H±o¥X¥H¤U¦^Âk¡G¥æ´«¥Í¤H¼Æ=-12.548 + 1.398 x contracts + 0.259 x English_courses
+
+¦X²zªº¬O¡A¦X¬ù¼Æ¶qªº¼W¥[¹ï©ó¥æ´«¥Í¤H¼Æ¤]·|¦³¥¿¦Vªº¼vÅT¡A²¦³º¾Ç®ÕÂù¤èÃ±­q¦X¬ù¡A³q±`´N·|°tµ¹¤@©wªº¦WÃB¥i¨Ñ¨âÃä¾Ç¥Í¤¬¬Û¥æ´«¡A¦]¦¹¦X¬ù¶V¦hªº¸Ü¡A²z·í¥æ´«¥Í¤H¼Æ¤]·|¸òµÛ¼W¥[¡F¦¹¥~¡A­^»y±Â½Ò¼Æ¶qªº¼W¥[¤]·|³y¦¨¥æ´«¥Í¤H¼Æªº¼W¥[¡A¦X²z±À´ú¡A·í¾Ç®Õ§Æ±æ¯à°÷©Û¦¬§ó¦h¥æ´«¾Ç¥Íªº±¡ªp¤U¡A¶Õ¥²¤]¥²¶·¶}³]°÷¦hªº­^»y½Òµ{¼Æ¶q¡A§_«h§l¤Þ¨Óªº¥æ´«¾Ç¥Í¥i¯à´N¶È«]­­¦bÀ´¤¤¤å©Î·Q¾Ç¤¤¤åªº¥æ´«¾Ç¥Í¡A¦]¦Ó­°§C¥~°ê¾Ç¥Í¨Ó¥x¥æ´«ªº·NÄ@¡C
+
+
+
+```{r result, echo=TRUE}
+# F test for linear regression model
+newdata <- cbind(data,data2[,c(1,5,6,7)])
+anova(m0 <- lm(newdata[,3]~ Contracts, data=newdata))
+anova(m1 <- lm(newdata[,3]~ Contracts+ English_courses, data=newdata))
+anova(m2 <- lm(newdata[,3]~ foreign.visitors+ Contracts+ English_courses+ political.index, data=newdata))
+anova(m3 <- lm(newdata[,3]~ foreign.visitors+ Contracts+ English_courses+Taiwan.GDP.growth.rate+ political.index, data=newdata))
+anova(m4 <- lm(newdata[,3]~ foreign.visitors+ Contracts+ English_courses+Taiwan.GDP.growth.rate+ China.GDP.growth.rate + political.index, data=newdata))
+
+lapply(list(m0,m1,m2,m3,m4),summary)
+
+#Partial F test
+anova(m4, m3)
+anova(m3, m2)
+anova(m2, m1)
+anova(m1, m0)
+
+summary(m1)
+```
+
+
+```{r effects,echo=FALSE}
+#­^»y±Â½Ò¼Æ¶q»P¥æ´«¥Í¤H¼ÆÃö«Y¡Ay=exchange students, x=English courses
+ggplot(data=data, aes(group=department, x=data[,3], y= data[,2])) + geom_point() + stat_smooth(method="lm", se=F)+stat_smooth(aes(group=department, x=data[,3], y= data[,2]),method="lm", se=F)+facet_grid(.~department)+labs(x="English course", y="Exchange student")
+
+#­^»y±Â½Ò¼Æ¶q»P¦X¬ù¼ÆÃö«Y¡Ay=English courses, x=contracts
+ggplot(data=data, aes(group=department, x=data[,4], y= data[,2])) + geom_point() + stat_smooth(method="lm", se=F)+stat_smooth(aes(group=department, x=data[,4], y= data[,2]),method="lm", se=F)+facet_grid(.~department)+labs(x="English course", y="Contracts")
+
+
+#¦X¬ù¼Æ¶q¤Î­^»y±Â½Ò¼Æ¶q¹ï¥æ´«¥Í¤H¼Æªº®ÄªG
+library(coefplot)
+effect <- lm(data=data, Exchange_students~English_courses+Contracts-1)
+coefplot(effect, xlab="value", "parameter", title="Effect")
+```
